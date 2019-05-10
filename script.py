@@ -48,4 +48,6 @@ def run(filename):
 
     print symbols
     for command in commands:
-        print command
+        if command == "sphere":
+            return
+        return
