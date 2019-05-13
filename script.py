@@ -48,6 +48,63 @@ def run(filename):
 
     print symbols
     for command in commands:
-        if command == "sphere":
-            return
-        return
+        if command['op'] == "push":
+            systems.append( [x[:] for x in systems[-1]] )
+        elif command['op'] == "pop":
+            systems.pop()
+        elif command['op'] == "move":
+            t = make_translate(float(args[0]), float(args[1]), float(args[2]))
+            matrix_mult( systems[-1], t )
+            systems[-1] = [ x[:] for x in t]
+        elif command['op'] == "rotate":
+            theta = float(args[1]) * (math.pi / 180)
+            if args[0] == 'x':
+                t = make_rotX(theta)
+            elif args[0] == 'y':
+                t = make_rotY(theta)
+            else:
+                t = make_rotZ(theta)
+            matrix_mult( systems[-1], t )
+            systems[-1] = [ x[:] for x in t]
+        elif command['op'] == "scale":
+            t = make_scale(float(args[0]), float(args[1]), float(args[2]))
+            matrix_mult( systems[-1], t )
+            systems[-1] = [ x[:] for x in t]
+        elif command['op'] == "box":
+            add_box(polygons,
+                    float(args[0]), float(args[1]), float(args[2]),
+                    float(args[3]), float(args[4]), float(args[5]))
+            matrix_mult( systems[-1], polygons )
+            draw_polygons(polygons, screen, zbuffer, view, ambient, light, areflect, dreflect, sreflect)
+            polygons = []
+        elif command['op'] == "sphere":
+            add_sphere(polygons,
+                       float(args[0]), float(args[1]), float(args[2]),
+                       float(args[3]), step_3d)
+            matrix_mult( systems[-1], polygons )
+            draw_polygons(polygons, screen, zbuffer, view, ambient, light, areflect, dreflect, sreflect)
+            polygons = []
+        elif command['op'] == "torus":
+            add_torus(polygons,
+                      float(args[0]), float(args[1]), float(args[2]),
+                      float(args[3]), float(args[4]), step_3d)
+            matrix_mult( systems[-1], polygons )
+            draw_polygons(polygons, screen, zbuffer, view, ambient, light, areflect, dreflect, sreflect)
+            polygons = []
+        elif command['op'] == "constants":
+            pass
+        elif command['op'] == "line":
+            add_curve(edges,
+                      float(args[0]), float(args[1]),
+                      float(args[2]), float(args[3]),
+                      float(args[4]), float(args[5]),
+                      float(args[6]), float(args[7]),
+                      step, line)
+            matrix_mult( systems[-1], edges )
+            draw_lines(edges, screen, zbuffer, color)
+            edges = []
+        elif command['op'] == "save" or command['op'] == "display":
+            if line == 'display':
+                display(screen)
+            else:
+                save_extension(screen, args[0])
