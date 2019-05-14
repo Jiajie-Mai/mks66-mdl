@@ -72,6 +72,10 @@ def run(filename):
             matrix_mult( stack[-1], t )
             stack[-1] = [ x[:] for x in t]
         elif command['op'] == "box":
+            if command['constants']:
+                reflect = command['constants']
+            else:
+                reflect = '.white'
             add_box(tmp,
                     float(args[0]), float(args[1]), float(args[2]),
                     float(args[3]), float(args[4]), float(args[5]))
@@ -79,6 +83,10 @@ def run(filename):
             draw_polygons(tmp, screen, zbuffer, view, ambient, light, symbols, reflect)
             tmp = []
         elif command['op'] == "sphere":
+            if command['constants']:
+                reflect = command['constants']
+            else:
+                reflect = '.white'
             add_sphere(tmp,
                        float(args[0]), float(args[1]), float(args[2]),
                        float(args[3]), step_3d)
@@ -86,21 +94,29 @@ def run(filename):
             draw_polygons(tmp, screen, zbuffer, view, ambient, light, symbols, reflect)
             tmp = []
         elif command['op'] == "torus":
+            if command['constants']:
+                reflect = command['constants']
+            else:
+                reflect = '.white'
             add_torus(tmp,
                       float(args[0]), float(args[1]), float(args[2]),
                       float(args[3]), float(args[4]), step_3d)
             matrix_mult( stack[-1], tmp )
             draw_polygons(tmp, screen, zbuffer, view, ambient, light, symbols, reflect)
             tmp = []
-        elif command['op'] == "constants":
-            pass
         elif command['op'] == "line":
+            if command['constants']:
+                reflect = command['constants']
+            else:
+                reflect = '.white'
             add_edge( tmp,
                       float(args[0]), float(args[1]), float(args[2]),
                       float(args[3]), float(args[4]), float(args[5]) )
             matrix_mult( stack[-1], tmp )
             draw_lines(tmp, screen, zbuffer, color)
             tmp = []
+        elif command['op'] == "constants":
+            pass
         elif command['op'] == "save" or command['op'] == "display":
             if command['op'] == 'display':
                 display(screen)
