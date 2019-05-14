@@ -48,14 +48,15 @@ def run(filename):
 
     print symbols
     for command in commands:
+        args = command['args']
         if command['op'] == "push":
-            systems.append( [x[:] for x in systems[-1]] )
+            stack.append( [x[:] for x in stack[-1]] )
         elif command['op'] == "pop":
-            systems.pop()
+            stack.pop()
         elif command['op'] == "move":
             t = make_translate(float(args[0]), float(args[1]), float(args[2]))
-            matrix_mult( systems[-1], t )
-            systems[-1] = [ x[:] for x in t]
+            matrix_mult( stack[-1], t )
+            stack[-1] = [ x[:] for x in t]
         elif command['op'] == "rotate":
             theta = float(args[1]) * (math.pi / 180)
             if args[0] == 'x':
@@ -64,47 +65,44 @@ def run(filename):
                 t = make_rotY(theta)
             else:
                 t = make_rotZ(theta)
-            matrix_mult( systems[-1], t )
-            systems[-1] = [ x[:] for x in t]
+            matrix_mult( stack[-1], t )
+            stack[-1] = [ x[:] for x in t]
         elif command['op'] == "scale":
             t = make_scale(float(args[0]), float(args[1]), float(args[2]))
-            matrix_mult( systems[-1], t )
-            systems[-1] = [ x[:] for x in t]
+            matrix_mult( stack[-1], t )
+            stack[-1] = [ x[:] for x in t]
         elif command['op'] == "box":
-            add_box(polygons,
+            add_box(tmp,
                     float(args[0]), float(args[1]), float(args[2]),
                     float(args[3]), float(args[4]), float(args[5]))
-            matrix_mult( systems[-1], polygons )
-            draw_polygons(polygons, screen, zbuffer, view, ambient, light, areflect, dreflect, sreflect)
-            polygons = []
+            matrix_mult( stack[-1], tmp )
+            draw_polygons(tmp, screen, zbuffer, view, ambient, light, symbols, reflect)
+            tmp = []
         elif command['op'] == "sphere":
-            add_sphere(polygons,
+            add_sphere(tmp,
                        float(args[0]), float(args[1]), float(args[2]),
                        float(args[3]), step_3d)
-            matrix_mult( systems[-1], polygons )
-            draw_polygons(polygons, screen, zbuffer, view, ambient, light, areflect, dreflect, sreflect)
-            polygons = []
+            matrix_mult( stack[-1], tmp )
+            draw_polygons(tmp, screen, zbuffer, view, ambient, light, symbols, reflect)
+            tmp = []
         elif command['op'] == "torus":
-            add_torus(polygons,
+            add_torus(tmp,
                       float(args[0]), float(args[1]), float(args[2]),
                       float(args[3]), float(args[4]), step_3d)
-            matrix_mult( systems[-1], polygons )
-            draw_polygons(polygons, screen, zbuffer, view, ambient, light, areflect, dreflect, sreflect)
-            polygons = []
+            matrix_mult( stack[-1], tmp )
+            draw_polygons(tmp, screen, zbuffer, view, ambient, light, symbols, reflect)
+            tmp = []
         elif command['op'] == "constants":
             pass
         elif command['op'] == "line":
-            add_curve(edges,
-                      float(args[0]), float(args[1]),
-                      float(args[2]), float(args[3]),
-                      float(args[4]), float(args[5]),
-                      float(args[6]), float(args[7]),
-                      step, line)
-            matrix_mult( systems[-1], edges )
-            draw_lines(edges, screen, zbuffer, color)
-            edges = []
+            add_edge( tmp,
+                      float(args[0]), float(args[1]), float(args[2]),
+                      float(args[3]), float(args[4]), float(args[5]) )
+            matrix_mult( stack[-1], tmp )
+            draw_lines(tmp, screen, zbuffer, color)
+            tmp = []
         elif command['op'] == "save" or command['op'] == "display":
-            if line == 'display':
+            if command['op'] == 'display':
                 display(screen)
             else:
                 save_extension(screen, args[0])
