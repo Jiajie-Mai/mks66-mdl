@@ -1,0 +1,17 @@
+//                     R Values     G Values     B Values
+constants shiny_white 0.3 0.2 0.8  0.3 0.2 0.8  0.3 0.2 0.8
+constants dull_white  0.3 0.8 0.2  0.3 0.8 0.2  0.3 0.8 0.2
+constants matte_gray  0.4 0.4 0.4  0.4 0.4 0.4  0.4 0.4 0.4
+
+push
+rotate y 20
+rotate x 10
+move 200 300 0
+box matte_gray 0 0 0 200 200 200
+push
+
+
+
+
+display
+save pic.png
